@@ -22,6 +22,7 @@ public class Critter extends Rectangle
     public static final double VELOCITY = 5.0;
     public static final double GROWTH_RATE = 0.003;
     public static final int CRITTER_RADIUS = 12;
+    public static final int RANGE = Critter.CRITTER_RADIUS * 4;
     private static final Color CRITTER_COLOR = Color.BLACK;
     private static final Color CRITTER_FINAL_COLOR = Color.GREEN;
     

@@ -141,12 +141,13 @@ public class World
             if (Math.random() < c.getFoodAttractiveness())
             {
                 Food f = getClosestVisibleFood(c);
-                if (f != null)
+                Vector disp;
+                if (f != null && (disp = getVector(c, f)).getMag() <= Critter.RANGE)
                 {
-                    double dir = getVector(c, f).getDir();
+                    double dir = disp.getDir();
                     if (!f.isHealthy())
                     {
-                        dir = (dir + Math.random()*Math.PI*7/4) % (Math.PI * 2);
+                        dir = (dir + Math.random()*Math.PI*2) % (Math.PI * 2);
                     }
                     if (dir != 0)
                     {
@@ -167,7 +168,7 @@ public class World
         }
         try
         {
-            Thread.sleep(20);
+            Thread.sleep(10);
         }
         catch (InterruptedException e)
         {
