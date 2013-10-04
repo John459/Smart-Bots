@@ -64,7 +64,6 @@ public class View extends JFrame
     {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        
         for (Food f : world.getFood())
         {
             f.draw(g);

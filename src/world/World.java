@@ -23,7 +23,6 @@ public class World
     
     private List<Critter> critters;
     private List<Food> food;
-    
     private Genetics genetics;
     
     /**
@@ -127,14 +126,9 @@ public class World
     
     /**
      * Update all the critters
-     * @throws ConcurrentModificationException if two threads try to access the critters list at once
      */
-    public void update() throws ConcurrentModificationException
+    public void update()
     {
-        if (genetics.isPopulating())
-        {
-            return;
-        }
         for (Critter c : critters)
         {
             Vector v = c.getVelocity();
@@ -166,14 +160,7 @@ public class World
                 }
             }
         }
-        try
-        {
-            Thread.sleep(10);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
+        genetics.reproduce();
     }
     
 }

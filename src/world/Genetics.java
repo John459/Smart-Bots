@@ -19,31 +19,12 @@ import world.creatures.Critter;
 public class Genetics
 {
     
-    private static final int STEP_TIME = 10000;
+    private static final int STEP_TIME = 1000;
     private static final double CROSSOVER = 0.7;
     private static final double MUTATE = 0.1;
     
     private World world;
-    private Timer timer;
-    private boolean populating;
-    
-    /**
-     * This class is used to control how often
-     * Critters reproduce
-     */
-    private class ReproductionTime extends TimerTask
-    {
-
-        @Override
-        public void run()
-        {
-            populating = true;
-            reproduce();
-            populating = false;
-            timer.schedule(new ReproductionTime(), STEP_TIME);
-        }
-        
-    }
+    private long lastMutation;
     
     /**
      * Create a new Genetics object which operates on a given World
@@ -52,9 +33,7 @@ public class Genetics
     public Genetics(World world)
     {
         this.world = world;
-        this.populating = false;
-        this.timer = new Timer();
-        this.timer.schedule(new ReproductionTime(), STEP_TIME);
+        this.lastMutation = System.currentTimeMillis();
     }
     
     /**
@@ -112,26 +91,23 @@ public class Genetics
      * proportional to the amount off food they've eaten
      * @return the Critter who has been selected
      */
-    private Critter selectCritter()
+    private Critter selectCritter(List<Critter> critters)
     {
-        List<Critter> critters = new ArrayList<Critter>();
-        for (Critter c : world.getCritters())
+        List<Critter> potCritters = new ArrayList<Critter>();
+        for (Critter c : critters)
         {
             int count = Math.round(c.getFoodEaten() / 100.0f);
             for (int i = 0; i < count; i++)
             {
-                critters.add(c);
+                potCritters.add(c);
             }
         }
-        int index = (int) (Math.random() * critters.size());
-        try
+        if (potCritters.size() == 0)
         {
-            return critters.get(index);
+            return critters.get((int) (Math.random() * critters.size()));
         }
-        catch(IndexOutOfBoundsException e)
-        {
-            return world.getCritters().get((int) (Math.random() * world.getCritters().size()));
-        }
+        int index = (int) (Math.random() * potCritters.size());
+        return potCritters.get(index);
     }
     
     /**
@@ -139,14 +115,18 @@ public class Genetics
      */
     public void reproduce()
     {
-        List<Critter> critters = world.getCritters();
+        if (System.currentTimeMillis() - lastMutation < STEP_TIME)
+        {
+            return;
+        }
+        List<Critter> critters = new ArrayList<Critter>(world.getCritters());
         List<Critter> newCritters = new LinkedList<Critter>();
         int size = critters.size();
         while (newCritters.size() < size - size % 2)
         {
-            Critter a = this.selectCritter();
+            Critter a = this.selectCritter(critters);
             critters.remove(a);
-            Critter b = this.selectCritter();
+            Critter b = this.selectCritter(critters);
             critters.remove(b);
             
             if (Math.random() < CROSSOVER)
@@ -160,17 +140,8 @@ public class Genetics
             newCritters.add(a);
             newCritters.add(b);
         }
-        
         world.setCritters(newCritters);
-    }
-    
-    /**
-     * Determine whether or not a new population of Critters is being made
-     * @return true is a new population of Critters is being made, false otherwise
-     */
-    public boolean isPopulating()
-    {
-        return populating;
+        lastMutation = System.currentTimeMillis();
     }
     
 }

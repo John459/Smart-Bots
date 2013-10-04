@@ -1,4 +1,3 @@
-import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import world.World;
@@ -67,21 +66,14 @@ public class Main implements Runnable
     {
         while (true)
         {
+            world.update();
             try
             {
-                world.update();
+                Thread.sleep(1);
             }
-            catch (ConcurrentModificationException e)
+            catch (InterruptedException e)
             {
-                try
-                {
-                    Thread.sleep(5);
-                }
-                catch (InterruptedException e1)
-                {
-                    e1.printStackTrace();
-                }
-                continue;
+                e.printStackTrace();
             }
             view.repaint();
         }
